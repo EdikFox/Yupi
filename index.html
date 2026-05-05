@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#7c3aed" />
+  <title>Yupi</title>
+  <style>
+    :root{
+      --bg:#0f0b1a;
+      --bg2:#181128;
+      --card:rgba(255,255,255,.08);
+      --card2:rgba(255,255,255,.12);
+      --text:#f6f2ff;
+      --muted:rgba(246,242,255,.72);
+      --line:rgba(255,255,255,.12);
+      --purple:#8b5cf6;
+      --purple2:#a855f7;
+      --pink:#ec4899;
+      --good:#22c55e;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:
+      radial-gradient(circle at top left, rgba(168,85,247,.35), transparent 30%),
+      radial-gradient(circle at top right, rgba(236,72,153,.18), transparent 28%),
+      linear-gradient(180deg, #120d1f, #0d0a16 65%, #0a0811);
+      color:var(--text); min-height:100%;}
+    body{min-height:100vh; overflow-x:hidden;}
+
+    .app{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter: blur(18px);
+      background: rgba(13,10,22,.72);
+      border-bottom:1px solid var(--line);
+      padding:16px 16px 14px;
+    }
+    .brand{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+    }
+    .logo{
+      display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:.2px;
+    }
+    .orb{
+      width:14px;height:14px;border-radius:50%;
+      background:linear-gradient(135deg,var(--purple),var(--pink));
+      box-shadow:0 0 22px rgba(168,85,247,.9);
+    }
+    .badge{
+      font-size:12px;color:var(--text);opacity:.9;
+      padding:8px 12px;border:1px solid var(--line);border-radius:999px;
+      background:rgba(255,255,255,.04);
+    }
+    .nav{
+      display:flex;gap:10px;margin-top:14px;
+    }
+    .nav button{
+      flex:1;
+      border:none; border-radius:999px;
+      padding:12px 10px;
+      color:var(--text);
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      font-weight:700;
+    }
+    .nav button.active{
+      background:linear-gradient(135deg,var(--purple),var(--pink));
+      box-shadow:0 12px 30px rgba(139,92,246,.28);
+    }
+
+    .screen{display:none;padding:16px 16px 28px}
+    .screen.active{display:block;animation:fade .22s ease}
+    @keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+    .hero{
+      margin-top:6px;
+      padding:20px;
+      border-radius:var(--radius);
+      background:
+        linear-gradient(135deg, rgba(139,92,246,.28), rgba(236,72,153,.14)),
+        rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+    .hero h1{margin:0 0 8px;font-size:28px;line-height:1.05}
+    .hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+
+    .panel{
+      margin-top:14px;
+      padding:16px;
+      border-radius:var(--radius);
+      background:var(--card);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .panel h2{margin:0 0 14px;font-size:18px}
+    .grid{display:grid;gap:12px}
+    .field{display:grid;gap:8px}
+    .label{font-size:12px;color:var(--muted);padding-left:4px}
+    .input,.textarea{
+      width:100%;
+      border:none; outline:none;
+      color:var(--text);
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      padding:14px 14px;
+      border-radius:18px;
+      font-size:15px;
+    }
+    .textarea{min-height:92px;resize:none}
+    .row{display:flex;gap:10px;align-items:center}
+    .btn{
+      border:none;cursor:pointer;
+      padding:13px 14px;border-radius:18px;
+      color:white;font-weight:800;font-size:15px;
+      background:linear-gradient(135deg,var(--purple),var(--pink));
+      box-shadow:0 14px 30px rgba(139,92,246,.22);
+    }
+    .btn.secondary{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      box-shadow:none;
+      color:var(--text);
+    }
+    .btn.good{
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+    }
+
+    .card{
+      display:grid; gap:14px;
+    }
+    .usercard{
+      overflow:hidden;
+      padding:0;
+    }
+    .photo{
+      height:220px;
+      position:relative;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.25), transparent 24%),
+        linear-gradient(145deg, rgba(139,92,246,.92), rgba(168,85,247,.54) 45%, rgba(236,72,153,.5));
+      border-bottom:1px solid var(--line);
+    }
+    .photo.alt1{background:linear-gradient(145deg,#7c3aed,#ec4899)}
+    .photo.alt2{background:linear-gradient(145deg,#8b5cf6,#06b6d4)}
+    .photo.alt3{background:linear-gradient(145deg,#a855f7,#22c55e)}
+    .avatar{
+      position:absolute;left:50%;bottom:-34px;transform:translateX(-50%);
+      width:88px;height:88px;border-radius:50%;
+      border:4px solid rgba(12,9,20,.95);
+      background:rgba(255,255,255,.18);
+      display:grid;place-items:center;
+      font-size:30px;font-weight:900;
+      box-shadow:0 18px 38px rgba(0,0,0,.28);
+      overflow:hidden;
+    }
+    .content{padding:46px 16px 16px}
+    .name{font-size:24px;font-weight:900;margin:0}
+    .meta{margin-top:5px;color:var(--muted);font-size:14px;line-height:1.4}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{
+      font-size:12px;padding:8px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text)
+    }
+    .progress{
+      margin-top:14px
+    }
+    .progresshead{
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:12px;color:var(--muted);margin-bottom:8px
+    }
+    .bar{
+      height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid var(--line)
+    }
+    .fill{
+      height:100%;border-radius:999px;
+      background:linear-gradient(90deg,var(--purple),var(--pink));
+    }
+    .actions{display:flex;gap:10px;margin-top:14px}
+    .actions .btn{flex:1}
+
+    .list{display:grid;gap:14px}
+    .mini{
+      display:grid;gap:12px;
+      grid-template-columns:110px 1fr;
+      overflow:hidden;
+    }
+    .mini .thumb{
+      min-height:160px;border-radius:22px;
+      background:linear-gradient(145deg,#8b5cf6,#ec4899);
+      position:relative;
+    }
+    .mini .thumb.alt1{background:linear-gradient(145deg,#7c3aed,#ec4899)}
+    .mini .thumb.alt2{background:linear-gradient(145deg,#8b5cf6,#06b6d4)}
+    .mini .thumb.alt3{background:linear-gradient(145deg,#a855f7,#22c55e)}
+    .mini .inner{padding:2px 2px 2px 0}
+    .mini h3{margin:0;font-size:18px}
+    .mini p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+    .mini .actions{margin-top:12px;flex-direction:column}
+
+    .chatbox{
+      display:none;
+      margin-top:14px;
+      border-radius:22px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      overflow:hidden;
+    }
+    .chatbox.active{display:block}
+    .chathead{
+      padding:12px 14px;border-bottom:1px solid var(--line);
+      display:flex;justify-content:space-between;align-items:center
+    }
+    .messages{padding:12px;display:grid;gap:10px}
+    .msg{
+      max-width:78%;
+      padding:11px 12px;border-radius:16px;
+      font-size:14px;line-height:1.35
+    }
+    .msg.me{margin-left:auto;background:linear-gradient(135deg,var(--purple),var(--pink))}
+    .msg.them{background:rgba(255,255,255,.08);border:1px solid var(--line)}
+    .footer{padding:14px 16px 24px;color:var(--muted);font-size:12px;text-align:center}
+
+    .hint{
+      color:var(--muted);font-size:13px;line-height:1.5
+    }
+
+    @media (max-width:380px){
+      .hero h1{font-size:24px}
+      .mini{grid-template-columns:96px 1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"><span class="orb"></span>Yupi</div>
+        <div class="badge" id="matchCount">0 лайков</div>
+      </div>
+      <div class="nav">
+        <button class="active" onclick="showScreen('register', this)">Регистрация</button>
+        <button onclick="showScreen('search', this)">Поиск</button>
+        <button onclick="showScreen('profile', this)">Профиль</button>
+      </div>
+    </div>
+
+    <div id="register" class="screen active">
+      <div class="hero">
+        <h1>Сайт знакомств Yupi</h1>
+        <p>Современный минималистичный дизайн, фиолетовая тема, анкеты, лайки и чат после взаимного интереса.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Регистрация</h2>
+        <div class="grid">
+          <div class="field">
+            <div class="label">Имя</div>
+            <input id="regName" class="input" type="text" placeholder="Алина" />
+          </div>
+          <div class="field">
+            <div class="label">Возраст</div>
+            <input id="regAge" class="input" type="number" min="18" max="99" placeholder="24" />
+          </div>
+          <div class="field">
+            <div class="label">Город</div>
+            <input id="regCity" class="input" type="text" placeholder="Москва" />
+          </div>
+          <div class="field">
+            <div class="label">О себе</div>
+            <textarea id="regAbout" class="textarea" placeholder="Коротко о себе..."></textarea>
+          </div>
+          <button class="btn" onclick="saveProfile()">Создать профиль</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="search" class="screen">
+      <div class="hero">
+        <h1>Поиск анкет</h1>
+        <p>Ставь лайки, смотри процент общения и открывай чат, когда совпадение взаимное.</p>
+      </div>
+      <div class="list" id="cards"></div>
+    </div>
+
+    <div id="profile" class="screen">
+      <div class="panel usercard">
+        <div class="photo" id="myPhoto">
+          <div class="avatar" id="myAvatar">Y</div>
+        </div>
+        <div class="content">
+          <h2 class="name" id="myName">Профиль не создан</h2>
+          <div class="meta" id="myMeta">Заполни форму регистрации, чтобы увидеть свой профиль.</div>
+
+          <div class="progress">
+            <div class="progresshead"><span>Индикатор общения</span><span id="myPercent">0%</span></div>
+            <div class="bar"><div class="fill" id="myFill" style="width:0%"></div></div>
+          </div>
+
+          <div class="chips" id="myChips"></div>
+
+          <div class="chatbox" id="chatBox">
+            <div class="chathead">
+              <strong>Чат открыт</strong>
+              <span style="color:var(--good);font-size:12px">взаимный лайк</span>
+            </div>
+            <div class="messages">
+              <div class="msg them">Привет! Кажется, у нас есть взаимный интерес 💜</div>
+              <div class="msg me">Привет! Да, давай познакомимся.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Как работает</h2>
+        <div class="hint">
+          Данные сохраняются бесплатно прямо в браузере через localStorage. Это значит, что всё работает без сервера и базы данных, но на одном устройстве и в одном браузере.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Yupi — бесплатный прототип в одном файле</div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "yupi_app_data_v1";
+
+    const demoUsers = [
+      { id: 1, name: "Анна", age: 24, city: "Москва", percent: 92, about: "Люблю кофе, стильные места и вечерние прогулки.", theme: "alt1" },
+      { id: 2, name: "Даниил", age: 27, city: "Санкт-Петербург", percent: 78, about: "Музыка, спорт и хорошие книги.", theme: "alt2" },
+      { id: 3, name: "Мария", age: 22, city: "Казань", percent: 64, about: "Дизайн, путешествия и юмор.", theme: "alt3" }
+    ];
+
+    let state = loadState();
+
+    function loadState(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+      return {
+        profile: null,
+        likes: [],
+        mutual: [2]
+      };
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateMatchCount();
+    }
+
+    function showScreen(id, btn){
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+      if(btn) btn.classList.add("active");
+      if(id === "search") renderCards();
+      if(id === "profile") renderProfile();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function saveProfile(){
+      const name = document.getElementById("regName").value.trim();
+      const age = document.getElementById("regAge").value.trim();
+      const city = document.getElementById("regCity").value.trim();
+      const about = document.getElementById("regAbout").value.trim();
+
+      if(!name || !age || !city){
+        alert("Заполни имя, возраст и город.");
+        return;
+      }
+
+      state.profile = {
+        name,
+        age,
+        city,
+        about,
+        percent: Math.floor(55 + Math.random() * 46)
+      };
+
+      saveState();
+      showScreen("profile", document.querySelectorAll(".nav button")[2]);
+    }
+
+    function renderProfile(){
+      const p = state.profile;
+      const myName = document.getElementById("myName");
+      const myMeta = document.getElementById("myMeta");
+      const myPercent = document.getElementById("myPercent");
+      const myFill = document.getElementById("myFill");
+      const myChips = document.getElementById("myChips");
+      const chatBox = document.getElementById("chatBox");
+      const myAvatar = document.getElementById("myAvatar");
+
+      if(!p){
+        myName.textContent = "Профиль не создан";
+        myMeta.textContent = "Заполни форму регистрации, чтобы увидеть свой профиль.";
+        myPercent.textContent = "0%";
+        myFill.style.width = "0%";
+        myChips.innerHTML = "";
+        chatBox.classList.remove("active");
+        myAvatar.textContent = "Y";
+        return;
+      }
+
+      myName.textContent = `${p.name}, ${p.age}`;
+      myMeta.textContent = `${p.city}${p.about ? " · " + p.about : ""}`;
+      myPercent.textContent = `${p.percent}%`;
+      myFill.style.width = `${p.percent}%`;
+      myChips.innerHTML = `
+        <div class="chip">${p.city}</div>
+        <div class="chip">Коммуникация ${p.percent}%</div>
+        <div class="chip">${p.percent >= 80 ? "Очень активный" : p.percent >= 50 ? "Хороший контакт" : "Знакомство"}</div>
+      `;
+      myAvatar.textContent = p.name.slice(0,1).toUpperCase();
+      chatBox.classList.toggle("active", state.mutual.length > 0);
+    }
+
+    function renderCards(){
+      const root = document.getElementById("cards");
+      root.innerHTML = demoUsers.map(u => {
+        const liked = state.likes.includes(u.id);
+        const mutual = state.mutual.includes(u.id);
+        return `
+          <div class="panel mini">
+            <div class="thumb ${u.theme}">
+              <div class="avatar" style="width:58px;height:58px;bottom:12px;border-width:3px">${u.name[0]}</div>
+            </div>
+            <div class="inner">
+              <h3>${u.name}, ${u.age}</h3>
+              <p>${u.city} · ${u.about}</p>
+
+              <div class="progress">
+                <div class="progresshead"><span>Индикатор общения</span><span>${u.percent}%</span></div>
+                <div class="bar"><div class="fill" style="width:${u.percent}%"></div></div>
+              </div>
+
+              <div class="actions">
+                <button class="btn ${liked ? 'secondary' : ''}" onclick="toggleLike(${u.id})">${liked ? 'Лайк поставлен' : '❤ Лайк'}</button>
+                <button class="btn ${mutual ? 'good' : 'secondary'}" onclick="openChat(${u.id})">${mutual ? 'Чат открыт' : 'Чат'}</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleLike(id){
+      if(state.likes.includes(id)){
+        state.likes = state.likes.filter(x => x !== id);
+      }else{
+        state.likes.push(id);
+        if(!state.mutual.includes(id) && Math.random() > 0.55){
+          state.mutual.push(id);
+        }
+      }
+      saveState();
+      renderCards();
+    }
+
+    function openChat(id){
+      if(state.likes.includes(id) && state.mutual.includes(id)){
+        alert("Взаимный лайк! Чат открыт.");
+        showScreen("profile", document.querySelectorAll(".nav button")[2]);
+      }else{
+        alert("Чат появится после взаимного лайка.");
+      }
+    }
+
+    function updateMatchCount(){
+      document.getElementById("matchCount").textContent = `${state.likes.length} лайков`;
+    }
+
+    updateMatchCount();
+    renderCards();
+    renderProfile();
+  </script>
+</body>
+</html>
